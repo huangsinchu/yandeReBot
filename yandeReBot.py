@@ -9,7 +9,9 @@ def downloadimg(url,dir):
 	list = url.split('/')
 	tmp = list[-1]
 	name = urllib.unquote(tmp)
-	conn = urllib2.urlopen(url)  
+	for i in ('\\','/',':','*','?','"','<','>','|'):
+		name=name.replace(i,'-')
+	conn = urllib2.urlopen(url)
 	f = open(dir+"\\"+name,'wb')
 	f.write(conn.read())
 	f.close()
@@ -48,7 +50,10 @@ while update_over==0:
 		if id>int(old_id):
 			imgurl=item['file_url']
 			print "downloading "+str(id)
-			downloadimg(imgurl,save_dir)
+			try:
+				downloadimg(imgurl,save_dir)
+			except IOError:
+				print "Fail to download "+str(id)
 		else:
 			update_over = 1
 			break
