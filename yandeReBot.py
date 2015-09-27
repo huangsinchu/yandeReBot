@@ -39,6 +39,10 @@ if update_over:
 else:
 	print str(old_id)+" to "+str(new_id)
 
+ini_write = open("yandeReBot.ini",'w')
+ini_write.write(str(new_id))
+ini_write.close()
+
 page = 1
 while update_over==0:
 	url_post_json = domain+'/post.json?limit=20&page='+str(page)
@@ -49,16 +53,14 @@ while update_over==0:
 		id = item['id']
 		if id>int(old_id):
 			imgurl=item['file_url']
-			print "downloading "+str(id)
+			print "downloading "+str(id)+" "+imgurl
 			try:
 				downloadimg(imgurl,save_dir)
-			except IOError:
+			except IOError,e:
 				print "Fail to download "+str(id)
+				print e
 		else:
 			update_over = 1
 			break
 	page=page+1
 	
-ini_write = open("yandeReBot.ini",'w')
-ini_write.write(str(new_id))
-ini_write.close()
