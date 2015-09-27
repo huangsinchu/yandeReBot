@@ -5,6 +5,10 @@ import os
 save_dir = 'F:\\Picture\\yandeReBot'
 domain = 'https://yande.re'
 
+pixiv_dir = os.path.join(save_dir,"FromPixiv")
+if not os.path.exists(pixiv_dir):
+	os.makedirs(pixiv_dir)
+
 def downloadimg(url,dir):
 	list = url.split('/')
 	tmp = list[-1]
@@ -51,11 +55,16 @@ while update_over==0:
 	decodejson = json.loads(json_post)
 	for item in decodejson:
 		id = item['id']
+		source = item['source']
+		from_pixiv = (len(source and "pixiv")>0)
 		if id>int(old_id):
 			imgurl=item['file_url']
 			print "downloading "+str(id)+" "+imgurl
 			try:
-				downloadimg(imgurl,save_dir)
+				if from_pixiv:
+					downloadimg(imgurl,pixiv_dir)
+				else:
+					downloadimg(imgurl,save_dir)
 			except IOError,e:
 				print "Fail to download "+str(id)
 				print e
