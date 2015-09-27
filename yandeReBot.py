@@ -1,6 +1,6 @@
-import urllib
-import urllib2
+import urllib,urllib2
 import json
+import os
 
 save_dir = 'F:\\Picture\\yandeReBot'
 domain = 'https://yande.re'
@@ -12,7 +12,7 @@ def downloadimg(url,dir):
 	for i in ('\\','/',':','*','?','"','<','>','|'):
 		name=name.replace(i,'-')
 	conn = urllib2.urlopen(url)
-	f = open(dir+"\\"+name,'wb')
+	f = open(os.path.join(dir,name),'wb')
 	f.write(conn.read())
 	f.close()
 
