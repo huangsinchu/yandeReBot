@@ -56,7 +56,7 @@ while update_over==0:
 	for item in decodejson:
 		id = item['id']
 		source = item['source']
-		from_pixiv = (len(source and "pixiv")>4)
+		from_pixiv = (source.find("pixiv")>-1)
 		if id>int(old_id):
 			imgurl=item['file_url']
 			print "downloading "+str(id)+" "+imgurl
