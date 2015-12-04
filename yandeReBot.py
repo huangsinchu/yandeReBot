@@ -1,6 +1,6 @@
 import urllib,urllib2
 import json
-import os
+import os,time
 
 save_dir = 'F:\\Picture\\yandeReBot'
 domain = 'https://yande.re'
@@ -9,17 +9,30 @@ pixiv_dir = os.path.join(save_dir,"FromPixiv")
 if not os.path.exists(pixiv_dir):
 	os.makedirs(pixiv_dir)
 
-def downloadimg(url,dir):
+def downloadimg_yandere(url,dir):
 	list = url.split('/')
 	tmp = list[-1]
 	name = urllib.unquote(tmp)
 	for i in ('\\','/',':','*','?','"','<','>','|'):
 		name=name.replace(i,'-')
-	conn = urllib2.urlopen(url)
+	conn = urllib2.urlopen(url,timeout=60)
 	f = open(os.path.join(dir,name),'wb')
 	f.write(conn.read())
 	f.close()
 
+def downloadimg_pixiv(url,dir):
+	list = url.split('/')
+	tmp = list[-1]
+	name = urllib.unquote(tmp)
+	send_header = {
+		'Referer':'http://www.pixiv.net',
+	}
+	req = urllib2.Request(url,headers = send_header)
+	conn = urllib2.urlopen(req,timeout=60)
+	f = open(os.path.join(dir,name),'wb')
+	f.write(conn.read())
+	f.close()
+	
 url_post_json = domain+'/post.json?limit=1'
 req_post = urllib2.urlopen(url_post_json)
 json_post = req_post.read()
@@ -62,10 +75,13 @@ while update_over==0:
 			print "downloading "+str(id)+" "+imgurl
 			try:
 				if from_pixiv:
-					downloadimg(imgurl,pixiv_dir)
+					try:
+						downloadimg_pixiv(source,pixiv_dir)
+					except Exception,e:
+						downloadimg_yandere(imgurl,pixiv_dir)
 				else:
-					downloadimg(imgurl,save_dir)
-			except IOError,e:
+					downloadimg_yandere(imgurl,save_dir)
+			except Exception,e:
 				print "Fail to download "+str(id)
 				print e
 		else:
